@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import type { activityType } from "../types";
 import { categories } from "../data/categories";
 
@@ -25,8 +25,23 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
     console.log(activity);
 };
 
+    const isValidActivity = () => {
+        const {name, calories } = activity
+        return name.trim() !== '' && calories > 0
+    }
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        console.log('submit...');
+        
+    }
+
     return (
-        <form className="space-y-6 bg-white shadow-lg p-8 rounded-lg">
+        <form 
+            className="space-y-6 bg-white shadow-lg p-8 rounded-lg"
+            onSubmit={handleSubmit}
+        >
             <div className="grid grid-cols-1 gap-4">
                 <label htmlFor="category" className="font-semibold text-gray-700">
                     Category:
@@ -34,7 +49,7 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
                 <select
                     className="border border-slate-300 p-3 rounded-lg w-full bg-white hover:border-lime-500 focus:border-lime-500 focus:ring focus:ring-lime-300 transition"
                     id="category"
-                    value={activity.calories}
+                    value={activity.category}
                     onChange={handleChange}
                     >
                     {categories.map((category) => (
@@ -75,8 +90,9 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
 
             <input 
                 type="submit" 
-                className="bg-gray-900 hover:bg-gray-800 w-full p-3 font-bold uppercase text-white cursor-pointer transition"
-                value="Save Food or Save Exercise"
+                className="bg-gray-900 hover:bg-gray-800 w-full p-3 font-bold uppercase text-white cursor-pointer transition disabled:opacity-20"
+                value={activity.category === 1 ? "Save Food": "Save Exercise"}
+                disabled={!isValidActivity()}
             />
         </form>
     );
