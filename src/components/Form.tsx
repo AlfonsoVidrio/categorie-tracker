@@ -1,19 +1,28 @@
-import { useState, ChangeEvent, FormEvent } from "react";
-import type { activityType } from "../types";
-import { categories } from "../data/categories";
+import { useState, ChangeEvent, FormEvent, Dispatch } from "react"
+import { v4 as uuid } from 'uuid'
+import type { activityType } from "../types"
+import { categories } from "../data/categories"
+import { ActivityActions, initialState } from "../reducers/activity-reducer"
 
-const Form = () => {
+type FormProps = {
+    dispatch: Dispatch<ActivityActions>
+}
 
-    const [activity, setActivity] = useState<activityType>({
-        category: 1,
-        name: '',
-        calories: 0
-    })
+const INITIAL_STATE: activityType = {
+    id: uuid(),
+    category: 1,
+    name: '',
+    calories: 0
+}
+
+const Form = ({dispatch}: FormProps) => {
+
+    const [activity, setActivity] = useState<activityType>(INITIAL_STATE)
     
 // Esta función maneja los cambios en los campos de entrada (input) y selección (select).
 const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
     // Verifica si el campo actual es uno de los campos que espera un número ('category' o 'calories').
-    const isNumberField = ['category', 'calories'].includes(event.target.id);
+    const isNumberField = ['category', 'calories'].includes(event.target.id)
 
     // Actualiza el estado de 'activity' usando la función 'setActivity'.
     // Utiliza el operador de propagación (...) para mantener los valores existentes.
@@ -21,9 +30,8 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
     setActivity({
         ...activity,
         [event.target.id]: isNumberField ? +event.target.value : event.target.value
-    });
-    console.log(activity);
-};
+    })
+}
 
     const isValidActivity = () => {
         const {name, calories } = activity
@@ -33,8 +41,14 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        console.log('submit...');
+        dispatch({ type: "save-activity", payload: {newActivity: activity}})
+
+        setActivity({
+            ...INITIAL_STATE,
+            id: uuid()
+        })
         
+        console.log(activity)
     }
 
     return (
@@ -95,7 +109,7 @@ const handleChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSel
                 disabled={!isValidActivity()}
             />
         </form>
-    );
-};
+    )
+}
 
-export default Form;
+export default Form
